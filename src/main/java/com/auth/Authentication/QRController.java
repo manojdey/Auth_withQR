@@ -69,6 +69,32 @@ public class QRController {
 	
 	
 	
+	/*
+	 * @ResponseBody
+	 * 
+	 * @PostMapping("/getqrcode") public ResponseEntity<String>
+	 * getQRCodeByBodyParam(@RequestBody RequestFormat rf) { try { // Build data
+	 * string for QR code String data = rf.getAapUrl() + "?encrValue=" +
+	 * rf.getTokenCode() + "&" + rf.getQrCodeString();
+	 * 
+	 * // Generate QR code as byte array byte[] qrCode =
+	 * qrCodeService.generateQrCode(data, WIDTH, HEIGHT);
+	 * 
+	 * // Save QR code into current directory String fileName = "qrcode_" +
+	 * System.currentTimeMillis() + ".png"; Path path = Paths.get(fileName);
+	 * Files.write(path, qrCode);
+	 * 
+	 * System.out.println("QR Code generated and saved as: " + fileName);
+	 * 
+	 * // Return success message return ResponseEntity.ok("Success");
+	 * 
+	 * } catch (Exception e) { e.printStackTrace(); return
+	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	 * .body("Failure: Unable to generate QR Code"); } }
+	 */
+	
+	
+	
 	@ResponseBody
 	@PostMapping("/getqrcode")
 	public ResponseEntity<String> getQRCodeByBodyParam(@RequestBody RequestFormat rf) {
@@ -79,14 +105,22 @@ public class QRController {
 	        // Generate QR code as byte array
 	        byte[] qrCode = qrCodeService.generateQrCode(data, WIDTH, HEIGHT);
 
-	        // Save QR code into current directory
+	        // Fixed directory where QR code should be saved
+	        String directory = "C:\\AA_ManojStorage\\API_automation\\API-Automation\\newman";
+
+	        // Ensure directory exists
+	        Files.createDirectories(Paths.get(directory));
+
+	        // Build file path
 	        String fileName = "qrcode_" + System.currentTimeMillis() + ".png";
-	        Path path = Paths.get(fileName);
+	        Path path = Paths.get(directory, fileName);
+
+	        // Save QR code
 	        Files.write(path, qrCode);
 
-	        System.out.println("QR Code generated and saved as: " + fileName);
+	        System.out.println("QR Code generated and saved as: " + path.toAbsolutePath());
 
-	        // Return success message
+	        // Return success message (can also return file path if you like)
 	        return ResponseEntity.ok("Success");
 
 	    } catch (Exception e) {
@@ -95,4 +129,5 @@ public class QRController {
 	                             .body("Failure: Unable to generate QR Code");
 	    }
 	}
+
 }
