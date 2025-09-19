@@ -1,0 +1,19 @@
+# Ignore build output
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Ignore IntelliJ / Eclipse / VSCode project files
+.idea/
+*.iml
+*.classpath
+*.project
+.settings/
+
+# Ignore logs
+*.log
+
+# Ignore generated QR codes
+qrcode_*.png

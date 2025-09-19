@@ -42,31 +42,33 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
     protected void configure(HttpSecurity http) throws Exception {
-    	
-    	System.out.println("configure-------------------------------");
         http
-                .csrf().disable()
-                .exceptionHandling()
+            .csrf().disable()
+            .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
-                .and()
-                .sessionManagement()
+            .and()
+            .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
+            .and()
+            .authorizeRequests()
+                // Allow only login/auth APIs without JWT
                 .antMatchers("/api/v1/auth/**").permitAll()
-                .antMatchers("/v2/api-docs/**").permitAll()
-                .antMatchers("/swagger-ui/**").permitAll()
-                .antMatchers("/swagger-resources/**").permitAll()
-                .antMatchers("/swagger-ui.html").permitAll()
-                .antMatchers("/webjars/**").permitAll()
-                .anyRequest()               
-                .authenticated();
+
+                // Protect this endpoint - requires valid JWT
+                .antMatchers(HttpMethod.GET, "/api/v1/getAllUserData").authenticated()
+
+                // Swagger open for testing
+                .antMatchers("/v2/api-docs/**", "/swagger-ui/**", "/swagger-resources/**",
+                             "/swagger-ui.html", "/webjars/**").permitAll()
+
+                // Any other request also needs authentication
+                .anyRequest().authenticated();
+
+        // Add JWT filter
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
-
+    
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService)
